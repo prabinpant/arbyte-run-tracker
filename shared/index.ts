@@ -7,6 +7,7 @@ export interface User {
   totalDistance: number; // in meters
   totalPace: number; // seconds per km
   activityCount: number;
+  totalMovingTime: number; // in seconds
   lastSyncedAt: Date;
   accessToken?: string;
   refreshToken?: string;

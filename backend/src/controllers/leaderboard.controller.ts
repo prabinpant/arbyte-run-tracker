@@ -41,6 +41,7 @@ export const getLeaderboard = async (req: Request, res: Response) => {
         lastName: user?.lastName || '',
         profileEmoji: user?.profileEmoji || '🏃',
         totalDistance: stat.totalDistance,
+        totalMovingTime: stat.totalMovingTime,
         totalPace,
         activityCount: stat.activityCount,
         lastSyncedAt: user?.lastSyncedAt || new Date(),

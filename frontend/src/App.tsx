@@ -53,27 +53,38 @@ function App() {
       })
   }, [])
 
-  return (
-    <div style={{ minHeight: '100vh', padding: '2rem' }}>
-      <header style={{ textAlign: 'center', marginBottom: '3rem' }} className="animate-shake">
-        <h1 style={{ fontSize: '4rem', color: 'var(--primary)', textShadow: '4px 4px 0px black' }}>
-          ARBYTE 100KM
-        </h1>
-        <h2 style={{ fontSize: '1.5rem', color: 'var(--text)', background: 'white', display: 'inline-block', padding: '0.5rem 1rem', transform: 'rotate(-2deg)', border: '3px solid black' }}>
-          APRIL CHALLENGE 🏃‍♂️💨
-        </h2>
-      </header>
+  const currentUserEntry = leaderboard.find(entry => entry.stravaId === user?.stravaId);
+  const userDistance = currentUserEntry ? (currentUserEntry.totalDistance / 1000) : 0;
+  const userRank = currentUserEntry ? currentUserEntry.rank : '-';
+  const remainingDistance = Math.max(0, 100 - userDistance);
 
+  return (
+    <div style={{ 
+      minHeight: '100vh', 
+      background: 'linear-gradient(135deg, #FF6B6B 0%, #4ECDC4 100%)',
+      padding: '2rem 1rem'
+    }}>
       <main style={{ maxWidth: '1000px', margin: '0 auto' }}>
+        <header style={{ textAlign: 'center', marginBottom: '3rem' }} className="animate-shake">
+          <h1 style={{ fontSize: '4rem', color: 'var(--primary)', textShadow: '4px 4px 0px black' }}>
+            ARBYTE 100KM
+          </h1>
+          <h2 style={{ fontSize: '1.5rem', color: 'var(--text)', background: 'white', display: 'inline-block', padding: '0.5rem 1rem', transform: 'rotate(-2deg)', border: '3px solid black' }}>
+            APRIL CHALLENGE 🏃‍♂️💨
+          </h2>
+        </header>
+        
         {!isLoggedIn ? (
           <div style={{ textAlign: 'center', padding: '4rem 0' }}>
-            <Card title="Ready to join the race?" className="animate-float">
+            <Card>
+              <h2 className="font-fun" style={{ fontSize: '2.5rem', marginBottom: '1.5rem' }}>
+                Ready to Join the 100km Squad? 👟
+              </h2>
               <p style={{ fontSize: '1.2rem', marginBottom: '2rem' }}>
-                Track your Walk, Run, and Hike activities. 
-                <br /> Conquer 100km this April!
+                Track your April runs, climb the leaderboard, and crush the 100km challenge!
               </p>
-              <Button onClick={() => window.location.href = 'http://localhost:3001/api/auth/strava'} variant="secondary" style={{ fontSize: '1.5rem', padding: '1rem 3rem' }}>
-                🚀 LOGIN WITH STRAVA
+              <Button onClick={() => window.location.href = 'http://localhost:3001/api/auth/strava'}>
+                LOGIN WITH STRAVA
               </Button>
             </Card>
           </div>
@@ -87,21 +98,21 @@ function App() {
                 <div style={{ textAlign: 'center' }}>
                   <div style={{ fontSize: '3rem' }}>👟</div>
                   <h3>Your Distance</h3>
-                  <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>38.4 km</p>
+                  <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>{userDistance.toFixed(2)} km</p>
                 </div>
               </Card>
               <Card>
                 <div style={{ textAlign: 'center' }}>
                   <div style={{ fontSize: '3rem' }}>🏁</div>
                   <h3>Rank</h3>
-                  <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>#2</p>
+                  <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>#{userRank}</p>
                 </div>
               </Card>
               <Card>
                 <div style={{ textAlign: 'center' }}>
                   <div style={{ fontSize: '3rem' }}>📈</div>
                   <h3>Remaining</h3>
-                  <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>61.6 km</p>
+                  <p style={{ fontSize: '2rem', fontWeight: 'bold' }}>{remainingDistance.toFixed(2)} km</p>
                 </div>
               </Card>
             </div>
