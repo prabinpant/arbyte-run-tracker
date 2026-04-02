@@ -1,5 +1,7 @@
 import { Router } from 'express';
 import passport from 'passport';
+import jwt from 'jsonwebtoken';
+import { isAuthenticated } from '../middleware/auth.middleware';
 
 const router = Router();
 
@@ -8,25 +10,25 @@ router.get('/strava', passport.authenticate('strava', { scope: ['read,activity:r
 
 router.get('/strava/callback', 
   passport.authenticate('strava', { failureRedirect: `${process.env.VITE_APP_URL || 'http://localhost:5173'}/?error=strava_auth_failed` }),
-  (req, res) => {
-    // Successful authentication, redirect to frontend
-    res.redirect(`${process.env.VITE_APP_URL || 'http://localhost:5173'}/?success=strava_auth_success`);
+  (req: any, res: any) => {
+    // Generate Token
+    const token = jwt.sign(
+      { id: req.user._id }, 
+      process.env.JWT_SECRET || 'arbyte-secret', 
+      { expiresIn: '7d' }
+    );
+    
+    // Successful authentication, redirect to frontend with token
+    res.redirect(`${process.env.VITE_APP_URL || 'http://localhost:5173'}/?success=strava_auth_success&token=${token}`);
   }
 );
 
-router.get('/me', (req, res) => {
-  if (req.isAuthenticated()) {
-    res.json(req.user);
-  } else {
-    res.status(401).json({ error: 'Not authenticated' });
-  }
+router.get('/me', isAuthenticated, (req: any, res) => {
+  res.json(req.user);
 });
 
-router.post('/logout', (req: any, res, next) => {
-  req.logout((err: any) => {
-    if (err) return next(err);
-    res.status(200).json({ message: 'Logged out' });
-  });
+router.post('/logout', isAuthenticated, (req: any, res) => {
+  res.status(200).json({ message: 'Logged out' });
 });
 
 export default router;

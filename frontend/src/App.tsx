@@ -15,10 +15,15 @@ function App() {
   const [isEditingBio, setIsEditingBio] = useState(false);
   const [bioText, setBioText] = useState('');
 
+  const getAuthHeaders = (): Record<string, string> => {
+    const token = localStorage.getItem('arbyte_token');
+    return token ? { 'Authorization': `Bearer ${token}` } : {};
+  };
+
   const checkAuth = async () => {
     try {
       const res = await fetch(`${API_URL}/api/auth/me`, {
-        credentials: 'include'
+        headers: getAuthHeaders()
       });
       if (res.ok) {
         const data = await res.json();
@@ -36,7 +41,9 @@ function App() {
 
   const fetchLeaderboard = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/leaderboard`, { credentials: 'include' });
+      const res = await fetch(`${API_URL}/api/leaderboard`, { 
+        headers: getAuthHeaders()
+      });
       const data = await res.json();
       setLeaderboard(data.leaderboard || []);
     } catch (err) {
@@ -50,8 +57,9 @@ function App() {
     try {
       await fetch(`${API_URL}/api/auth/logout`, {
         method: 'POST',
-        credentials: 'include'
+        headers: getAuthHeaders()
       });
+      localStorage.removeItem('arbyte_token');
       setIsLoggedIn(false);
       setUser(null);
       toast.success('Logged out successfully!');
@@ -66,9 +74,11 @@ function App() {
     try {
       const res = await fetch(`${API_URL}/api/users/me`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 
+          'Content-Type': 'application/json',
+          ...getAuthHeaders()
+        },
         body: JSON.stringify({ bio: bioText }),
-        credentials: 'include'
       });
       if (res.ok) {
         const updatedUser = await res.json();
@@ -90,6 +100,11 @@ function App() {
     const urlParams = new URLSearchParams(window.location.search);
     const successParam = urlParams.get('success');
     const errorParam = urlParams.get('error');
+    const tokenParam = urlParams.get('token');
+
+    if (tokenParam) {
+      localStorage.setItem('arbyte_token', tokenParam);
+    }
 
     if (successParam === 'strava_auth_success') {
       toast.success('Successfully linked Strava! Welcome to the squad.');

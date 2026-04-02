@@ -4,7 +4,6 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import path from 'path';
-import session from 'express-session';
 import passport from './config/passport';
 import authRoutes from './routes/auth.routes';
 import activityRoutes from './routes/activity.routes';
@@ -39,20 +38,8 @@ app.use(helmet());
 app.use(morgan('dev'));
 app.use(express.json());
 
-// Session and Passport
-app.use(session({
-  secret: process.env.JWT_SECRET || 'arbyte-secret',
-  resave: false,
-  saveUninitialized: false,
-  proxy: true, // Required for secure cookies behind proxy
-  cookie: {
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Mandatory for cross-domain
-    maxAge: 24 * 60 * 60 * 1000 // 24 hours
-  }
-}));
+// Passport
 app.use(passport.initialize());
-app.use(passport.session());
 
 // Routes
 app.get('/health', (req, res) => {
