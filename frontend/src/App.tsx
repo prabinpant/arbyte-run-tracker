@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import toast, { Toaster } from 'react-hot-toast';
 import LeaderboardTable from './components/LeaderboardTable';
 import ProfileModal from './components/ProfileModal';
 import type { LeaderboardEntry } from './types/index';
@@ -24,6 +25,9 @@ function App() {
         setUser(data);
         setIsLoggedIn(true);
         setBioText(data.bio || '');
+      } else if (res.status === 401) {
+        // Silently fail auth check on mount, it's expected if not logged in
+        setIsLoggedIn(false);
       }
     } catch (err) {
       console.error('Auth check failed:', err);
@@ -50,12 +54,15 @@ function App() {
       });
       setIsLoggedIn(false);
       setUser(null);
+      toast.success('Logged out successfully!');
     } catch (err) {
       console.error('Logout failed:', err);
+      toast.error('Failed to logout');
     }
   };
 
   const handleUpdateBio = async () => {
+    const loadingToast = toast.loading('Updating bio...');
     try {
       const res = await fetch(`${API_URL}/api/users/me`, {
         method: 'PATCH',
@@ -68,13 +75,32 @@ function App() {
         setUser(updatedUser);
         setIsEditingBio(false);
         fetchLeaderboard();
+        toast.success('Bio updated!', { id: loadingToast });
+      } else {
+        throw new Error('Update failed');
       }
     } catch (err) {
       console.error('Failed to update bio:', err);
+      toast.error('Failed to update bio', { id: loadingToast });
     }
   };
 
   useEffect(() => {
+    // Check for success/error params from Strava OAuth
+    const urlParams = new URLSearchParams(window.location.search);
+    const successParam = urlParams.get('success');
+    const errorParam = urlParams.get('error');
+
+    if (successParam === 'strava_auth_success') {
+      toast.success('Successfully linked Strava! Welcome to the squad.');
+      // Clean up the URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (errorParam === 'strava_auth_failed') {
+      toast.error('Failed to link Strava. Please try again.');
+      // Clean up the URL
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+
     checkAuth();
     fetchLeaderboard();
     const interval = setInterval(fetchLeaderboard, 60000);
@@ -218,6 +244,19 @@ function App() {
           onClose={() => setSelectedAthleteId(null)} 
         />
       )}
+      <Toaster 
+        position="bottom-right"
+        toastOptions={{
+          style: {
+            background: 'black',
+            color: 'white',
+            borderRadius: '0',
+            border: '4px solid white',
+            fontFamily: 'inherit',
+            fontWeight: 800,
+          },
+        }}
+      />
     </div>
   );
 }

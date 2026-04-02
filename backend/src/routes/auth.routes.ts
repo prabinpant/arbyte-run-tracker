@@ -7,10 +7,10 @@ const router = Router();
 router.get('/strava', passport.authenticate('strava', { scope: ['read,activity:read_all'] }));
 
 router.get('/strava/callback', 
-  passport.authenticate('strava', { failureRedirect: '/login' }),
+  passport.authenticate('strava', { failureRedirect: `${process.env.VITE_APP_URL || 'http://localhost:5173'}/?error=strava_auth_failed` }),
   (req, res) => {
     // Successful authentication, redirect to frontend
-    res.redirect(process.env.VITE_APP_URL || 'http://localhost:5173');
+    res.redirect(`${process.env.VITE_APP_URL || 'http://localhost:5173'}/?success=strava_auth_success`);
   }
 );
 

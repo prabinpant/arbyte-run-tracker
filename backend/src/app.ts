@@ -14,13 +14,25 @@ import AppError from './utils/AppError';
 import errorMiddleware from './middleware/error.middleware';
 import asyncHandler from './utils/asyncHandler';
 
-dotenv.config();
-
 const app = express();
 
+app.set('trust proxy', 1); // Trust first proxy (Render)
+
 // Middlewares
+const allowedOrigins = [
+  'http://localhost:5173',
+  process.env.VITE_APP_URL
+].filter(Boolean) as string[];
+
 app.use(cors({
-  origin: process.env.VITE_APP_URL || 'http://localhost:5173',
+  origin: (origin, callback) => {
+    // allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1 || allowedOrigins.some(o => origin.startsWith(o))) {
+      return callback(null, true);
+    }
+    return callback(null, false);
+  },
   credentials: true,
 }));
 app.use(helmet());
@@ -32,9 +44,10 @@ app.use(session({
   secret: process.env.JWT_SECRET || 'arbyte-secret',
   resave: false,
   saveUninitialized: false,
+  proxy: true, // Required for secure cookies behind proxy
   cookie: {
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax',
+    sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax', // Mandatory for cross-domain
     maxAge: 24 * 60 * 60 * 1000 // 24 hours
   }
 }));
