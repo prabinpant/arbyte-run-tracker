@@ -1,33 +1,40 @@
 export interface User {
-  id: string;
+  _id: string;
   stravaId: string;
   firstName: string;
   lastName: string;
   profileEmoji?: string;
-  totalDistance: number; // in meters
-  totalPace: number; // seconds per km
+  bio?: string;
+  totalDistance: number;
+  totalPace: number;
   activityCount: number;
-  totalMovingTime: number; // in seconds
-  lastSyncedAt: Date;
-  accessToken?: string;
-  refreshToken?: string;
-  expiresAt?: number;
+  totalMovingTime: number;
+  lastSyncedAt?: string;
+  createdAt: string;
 }
 
 export interface Activity {
-  id: string;
+  _id: string;
   stravaId: string;
   userId: string;
   name: string;
-  distance: number; // in meters
-  movingTime: number; // in seconds
-  elapsedTime: number; // in seconds
+  distance: number;
+  movingTime: number;
+  elapsedTime: number;
   type: 'Run' | 'Walk' | 'Hike';
-  startDate: Date;
+  startDate: string;
   startLatLng?: [number, number];
   polyline?: string;
 }
 
-export interface LeaderboardEntry extends User {
-  rank: number;
+export interface LeaderboardEntry {
+  userId: string;
+  firstName: string;
+  lastName: string;
+  profileEmoji: string;
+  bio?: string;
+  totalDistance: number;
+  totalActivities: number;
+  avgPace: number;
+  totalMovingTime: number;
 }
