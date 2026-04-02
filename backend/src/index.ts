@@ -14,6 +14,21 @@ connectDB();
 // Initialize Cron Jobs
 initCronJobs();
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
+});
+
+// Process Level Safety Handlers
+process.on('unhandledRejection', (err: any) => {
+    console.log('UNHANDLED REJECTION! 💥 Shutting down...');
+    console.error(err);
+    server.close(() => {
+        process.exit(1);
+    });
+});
+
+process.on('uncaughtException', (err: any) => {
+    console.log('UNCAUGHT EXCEPTION! 💥 Shutting down...');
+    console.error(err);
+    process.exit(1);
 });

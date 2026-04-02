@@ -1,7 +1,10 @@
 import mongoose, { Schema, Document } from 'mongoose';
 import { Activity as IActivity } from '../../../shared/index';
 
-export interface IActivityModel extends IActivity, Document {}
+export interface IActivityModel extends Omit<IActivity, '_id' | 'startDate' | 'userId'>, Document {
+  startDate: Date;
+  userId: mongoose.Types.ObjectId;
+}
 
 const ActivitySchema: Schema = new Schema({
   stravaId: { type: String, required: true, unique: true },

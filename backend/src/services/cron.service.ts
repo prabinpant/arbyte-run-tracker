@@ -14,15 +14,15 @@ export const initCronJobs = () => {
         try {
           // Skip if synced in the last 9 minutes (avoids redundant calls if they just logged in)
           const nineMinutesAgo = new Date(Date.now() - 9 * 60 * 1000);
-          if (user.lastSyncedAt && user.lastSyncedAt > nineMinutesAgo) {
-            console.log(`[Sync] Skipping ${user.firstName} (recently synced)`);
+          if (user.lastSyncedAt && new Date(user.lastSyncedAt) > nineMinutesAgo) {
+            console.log(`[Sync] Skipping ${user.firstName || 'Athlete'} (recently synced)`);
             continue;
           }
 
-          console.log(`[Sync] Processing ${user.firstName}...`);
+          console.log(`[Sync] Processing ${user.firstName || 'Athlete'}...`);
           await syncUserActivities(user._id.toString());
         } catch (err) {
-          console.error(`[Sync] Failed for ${user.firstName}:`, err);
+          console.error(`[Sync] Failed for ${user.firstName || 'Athlete'}:`, err);
         }
       }
       console.log('--- Global Sync Complete ---');
