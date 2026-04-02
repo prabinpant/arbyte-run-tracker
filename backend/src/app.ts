@@ -9,6 +9,10 @@ import passport from './config/passport';
 import authRoutes from './routes/auth.routes';
 import activityRoutes from './routes/activity.routes';
 import leaderboardRoutes from './routes/leaderboard.routes';
+import userRoutes from './routes/user.routes';
+import AppError from './utils/AppError';
+import errorMiddleware from './middleware/error.middleware';
+import asyncHandler from './utils/asyncHandler';
 
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
@@ -45,5 +49,14 @@ app.get('/health', (req, res) => {
 app.use('/api/auth', authRoutes);
 app.use('/api/activities', activityRoutes);
 app.use('/api/leaderboard', leaderboardRoutes);
+app.use('/api/users', userRoutes);
+
+// Handle undefined routes
+app.all(/(.*)/, (req, res, next) => {
+  next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
+});
+
+// Global Error Handler
+app.use(errorMiddleware);
 
 export default app;
