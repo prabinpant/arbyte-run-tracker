@@ -1,5 +1,5 @@
 import React from 'react';
-import type { LeaderboardEntry } from '../../../shared/index';
+import type { LeaderboardEntry } from '../types/index';
 
 interface LeaderboardTableProps {
   entries: LeaderboardEntry[];

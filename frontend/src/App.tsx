@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import LeaderboardTable from './components/LeaderboardTable';
 import ProfileModal from './components/ProfileModal';
-import type { LeaderboardEntry } from '../../shared/index';
+import type { LeaderboardEntry } from './types/index';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 

@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { Activity as IActivity } from '../../../shared/index';
+import { Activity as IActivity } from '../types/index';
 
 export interface IActivityModel extends Omit<IActivity, '_id' | 'startDate' | 'userId'>, Document {
   startDate: Date;

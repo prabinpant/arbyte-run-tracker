@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import type { LeaderboardEntry, Activity } from '../../../shared/index';
+import type { LeaderboardEntry, Activity } from '../types/index';
 
 interface ProfileModalProps {
   athlete: LeaderboardEntry;

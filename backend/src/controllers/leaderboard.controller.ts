@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import Activity from '../models/Activity';
 import User from '../models/User';
-import { LeaderboardEntry } from '../../../shared';
+import { LeaderboardEntry } from '../types/index';
 import asyncHandler from '../utils/asyncHandler';
 import AppError from '../utils/AppError';
 

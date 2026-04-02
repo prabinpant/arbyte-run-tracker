@@ -14,7 +14,7 @@ import AppError from './utils/AppError';
 import errorMiddleware from './middleware/error.middleware';
 import asyncHandler from './utils/asyncHandler';
 
-dotenv.config({ path: path.resolve(__dirname, '../../.env') });
+dotenv.config();
 
 const app = express();
 

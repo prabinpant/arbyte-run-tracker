@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
-import { User as IUser } from '../../../shared/index';
+import { User as IUser } from '../types/index';
 
 export interface IUserModel extends Omit<IUser, '_id' | 'lastSyncedAt'>, Document {
   accessToken: string;
