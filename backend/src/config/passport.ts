@@ -1,38 +1,49 @@
 import passport from 'passport';
-const StravaStrategy = require('passport-strava-oauth2').Strategy;
+import { Strategy as OAuth2Strategy } from 'passport-oauth2';
 import User from '../models/User';
 import dotenv from 'dotenv';
 import path from 'path';
 
 dotenv.config({ path: path.resolve(__dirname, '../../../.env') });
 
-passport.use(new StravaStrategy({
-    clientID: process.env.STRAVA_CLIENT_ID,
-    clientSecret: process.env.STRAVA_CLIENT_SECRET,
-    callbackURL: process.env.STRAVA_REDIRECT_URI,
+const stravaStrategy = new OAuth2Strategy({
+    authorizationURL: 'https://www.strava.com/oauth/authorize',
+    tokenURL: 'https://www.strava.com/oauth/token',
+    clientID: process.env.STRAVA_CLIENT_ID || '',
+    clientSecret: process.env.STRAVA_CLIENT_SECRET || '',
+    callbackURL: process.env.STRAVA_REDIRECT_URI || '',
     passReqToCallback: true
   },
-  async (req: any, accessToken: string, refreshToken: string, profile: any, done: any) => {
+  async (req: any, accessToken: string, refreshToken: string, params: any, profile: any, done: any) => {
     try {
-      let user = await User.findOne({ stravaId: profile.id });
+      // Strava returns the athlete object directly in the token response parameters
+      const athlete = params.athlete;
+      
+      if (!athlete) {
+        return done(new Error('No athlete data received in token exchange'), null);
+      }
+
+      const stravaId = athlete.id.toString();
+      let user = await User.findOne({ stravaId });
 
       if (!user) {
         user = await User.create({
-          stravaId: profile.id,
-          firstName: profile.name.givenName || 'Athlete',
-          lastName: profile.name.familyName || '',
+          stravaId,
+          firstName: athlete.firstname || 'Athlete',
+          lastName: athlete.lastname || '',
           profileEmoji: '🏃', // Default emoji
           totalDistance: 0,
           totalPace: 0,
           activityCount: 0,
           accessToken,
           refreshToken,
-          expiresAt: profile.expires_at // Passport-strava-oauth2 might provide this
+          expiresAt: params.expires_at 
         });
       } else {
-        // Update tokens
+        // Update tokens and user details
         user.accessToken = accessToken;
         user.refreshToken = refreshToken;
+        user.expiresAt = params.expires_at;
         await user.save();
       }
 
@@ -41,13 +52,16 @@ passport.use(new StravaStrategy({
       return done(err, null);
     }
   }
-));
+);
+
+// We name it 'strava' so our auth routes continue to work without modification
+passport.use('strava', stravaStrategy);
 
 passport.serializeUser((user: any, done) => {
   done(null, user.id);
 });
 
-passport.deserializeUser(async (id, done) => {
+passport.deserializeUser(async (id: string, done) => {
   try {
     const user = await User.findById(id);
     done(null, user);

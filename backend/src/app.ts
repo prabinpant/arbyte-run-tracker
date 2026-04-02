@@ -15,7 +15,10 @@ dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 const app = express();
 
 // Middlewares
-app.use(cors());
+app.use(cors({
+  origin: process.env.VITE_APP_URL || 'http://localhost:5173',
+  credentials: true,
+}));
 app.use(helmet());
 app.use(morgan('dev'));
 app.use(express.json());
@@ -25,6 +28,11 @@ app.use(session({
   secret: process.env.JWT_SECRET || 'arbyte-secret',
   resave: false,
   saveUninitialized: false,
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'lax',
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
 }));
 app.use(passport.initialize());
 app.use(passport.session());

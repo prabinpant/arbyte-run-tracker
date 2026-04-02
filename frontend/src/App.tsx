@@ -3,14 +3,45 @@ import './index.css'
 import { Button } from './components/Button'
 import { Card } from './components/Card'
 import { LeaderboardTable } from './components/LeaderboardTable'
+import type { LeaderboardEntry } from '../../shared/index'
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [leaderboard, setLeaderboard] = useState<any[]>([])
+  const [user, setUser] = useState<any>(null)
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([])
   const [loading, setLoading] = useState(true)
 
+  const checkAuth = async () => {
+    try {
+      const res = await fetch('http://localhost:3001/api/auth/me', {
+        credentials: 'include'
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setUser(data)
+        setIsLoggedIn(true)
+      }
+    } catch (err) {
+      console.error('Auth check failed:', err)
+    }
+  }
+
+  const handleLogout = async () => {
+    try {
+      await fetch('http://localhost:3001/api/auth/logout', {
+        method: 'POST',
+        credentials: 'include'
+      })
+      setIsLoggedIn(false)
+      setUser(null)
+    } catch (err) {
+      console.error('Logout failed:', err)
+    }
+  }
+
   React.useEffect(() => {
-    fetch('http://localhost:3001/api/leaderboard')
+    checkAuth()
+    fetch('http://localhost:3001/api/leaderboard', { credentials: 'include' })
       .then(res => res.json())
       .then(data => {
         setLeaderboard(data.leaderboard || [])
@@ -48,6 +79,9 @@ function App() {
           </div>
         ) : (
           <div>
+            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+              <h2 className="font-fun">Welcome back, {user?.firstName || 'Athlete'}! 🏅</h2>
+            </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '1rem', marginBottom: '3rem' }}>
               <Card>
                 <div style={{ textAlign: 'center' }}>
@@ -81,7 +115,7 @@ function App() {
             )}
 
             <div style={{ textAlign: 'center', marginTop: '2rem' }}>
-              <Button onClick={() => setIsLoggedIn(false)} variant="accent">
+              <Button onClick={handleLogout} variant="accent">
                 LOGOUT
               </Button>
             </div>
