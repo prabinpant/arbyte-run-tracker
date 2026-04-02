@@ -1,7 +1,8 @@
-import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import path from 'path';
+import mongoose from 'mongoose';
 
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
 const connectDB = async () => {
   try {

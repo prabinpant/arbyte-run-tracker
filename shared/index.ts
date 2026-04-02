@@ -8,6 +8,9 @@ export interface User {
   totalPace: number; // seconds per km
   activityCount: number;
   lastSyncedAt: Date;
+  accessToken?: string;
+  refreshToken?: string;
+  expiresAt?: number;
 }
 
 export interface Activity {

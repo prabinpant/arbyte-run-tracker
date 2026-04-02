@@ -104,3 +104,59 @@ body::after {
 .vibrant-pink { background-color: var(--primary); color: white; }
 .vibrant-cyan { background-color: var(--secondary); }
 .vibrant-green { background-color: var(--accent); color: white; }
+
+/* Animations */
+@keyframes shake {
+  0% { transform: rotate(0deg); }
+  25% { transform: rotate(-1deg); }
+  50% { transform: rotate(0deg); }
+  75% { transform: rotate(1deg); }
+  100% { transform: rotate(0deg); }
+}
+
+.animate-shake {
+  animation: shake 0.5s infinite linear;
+}
+
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 3s infinite ease-in-out;
+}
+
+/* Responsive Tweaks */
+@media (max-width: 768px) {
+  :root {
+    --shadow-offset: 4px;
+    --border-width: 3px;
+  }
+  
+  h1 {
+    font-size: 2.5rem !important;
+  }
+  
+  .card {
+    padding: 16px;
+    margin: 8px 0;
+  }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--background);
+  border-left: 2px solid black;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border: 3px solid black;
+  border-radius: 10px;
+}

@@ -6,17 +6,25 @@ import { LeaderboardTable } from './components/LeaderboardTable'
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [leaderboard, setLeaderboard] = useState<any[]>([])
+  const [loading, setLoading] = useState(true)
 
-  // Mock data for display
-  const mockLeaderboardData: any[] = [
-    { id: '1', rank: 1, firstName: 'Bipin', lastName: 'P', totalDistance: 45200, totalPace: 320, activityCount: 12, profileEmoji: '⚡' },
-    { id: '2', rank: 2, firstName: 'Prabin', lastName: 'P', totalDistance: 38400, totalPace: 345, activityCount: 10, profileEmoji: '🔥' },
-    { id: '3', rank: 3, firstName: 'Sagar', lastName: 'G', totalDistance: 29100, totalPace: 380, activityCount: 8, profileEmoji: '🌟' },
-  ]
+  React.useEffect(() => {
+    fetch('http://localhost:3001/api/leaderboard')
+      .then(res => res.json())
+      .then(data => {
+        setLeaderboard(data.leaderboard || [])
+        setLoading(false)
+      })
+      .catch(err => {
+        console.error(err)
+        setLoading(false)
+      })
+  }, [])
 
   return (
     <div style={{ minHeight: '100vh', padding: '2rem' }}>
-      <header style={{ textAlign: 'center', marginBottom: '3rem' }}>
+      <header style={{ textAlign: 'center', marginBottom: '3rem' }} className="animate-shake">
         <h1 style={{ fontSize: '4rem', color: 'var(--primary)', textShadow: '4px 4px 0px black' }}>
           ARBYTE 100KM
         </h1>
@@ -28,12 +36,12 @@ function App() {
       <main style={{ maxWidth: '1000px', margin: '0 auto' }}>
         {!isLoggedIn ? (
           <div style={{ textAlign: 'center', padding: '4rem 0' }}>
-            <Card title="Ready to join the race?">
+            <Card title="Ready to join the race?" className="animate-float">
               <p style={{ fontSize: '1.2rem', marginBottom: '2rem' }}>
                 Track your Walk, Run, and Hike activities. 
                 <br /> Conquer 100km this April!
               </p>
-              <Button onClick={() => setIsLoggedIn(true)} variant="secondary" style={{ fontSize: '1.5rem', padding: '1rem 3rem' }}>
+              <Button onClick={() => window.location.href = 'http://localhost:3001/api/auth/strava'} variant="secondary" style={{ fontSize: '1.5rem', padding: '1rem 3rem' }}>
                 🚀 LOGIN WITH STRAVA
               </Button>
             </Card>
@@ -64,7 +72,13 @@ function App() {
               </Card>
             </div>
             
-            <LeaderboardTable entries={mockLeaderboardData} />
+            {loading ? (
+              <div style={{ textAlign: 'center', padding: '2rem' }}>
+                <h3 className="font-fun">Loading Challenger Data... 🏁</h3>
+              </div>
+            ) : (
+              <LeaderboardTable entries={leaderboard} />
+            )}
 
             <div style={{ textAlign: 'center', marginTop: '2rem' }}>
               <Button onClick={() => setIsLoggedIn(false)} variant="accent">
