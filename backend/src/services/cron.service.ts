@@ -3,19 +3,26 @@ import User from '../models/User';
 import { syncUserActivities } from './strava.service';
 
 export const initCronJobs = () => {
-  // Sync all users every 30 minutes
-  cron.schedule('*/30 * * * *', async () => {
+  // Sync all users every 10 minutes
+  cron.schedule('*/10 * * * *', async () => {
     console.log('--- Starting Global Sync ---');
     try {
       const users = await User.find({ refreshToken: { $exists: true } });
-      console.log(`Syncing ${users.length} users...`);
+      console.log(`Found ${users.length} authorized users.`);
 
       for (const user of users) {
         try {
+          // Skip if synced in the last 9 minutes (avoids redundant calls if they just logged in)
+          const nineMinutesAgo = new Date(Date.now() - 9 * 60 * 1000);
+          if (user.lastSyncedAt && user.lastSyncedAt > nineMinutesAgo) {
+            console.log(`[Sync] Skipping ${user.firstName} (recently synced)`);
+            continue;
+          }
+
+          console.log(`[Sync] Processing ${user.firstName}...`);
           await syncUserActivities(user._id.toString());
-          console.log(`Synced user ${user.firstName}`);
         } catch (err) {
-          console.error(`Failed to sync user ${user.firstName}:`, err);
+          console.error(`[Sync] Failed for ${user.firstName}:`, err);
         }
       }
       console.log('--- Global Sync Complete ---');

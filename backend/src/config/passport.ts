@@ -1,6 +1,7 @@
 import passport from 'passport';
 import { Strategy as OAuth2Strategy } from 'passport-oauth2';
 import User from '../models/User';
+import { syncUserActivities } from '../services/strava.service';
 import dotenv from 'dotenv';
 import path from 'path';
 
@@ -35,6 +36,7 @@ const stravaStrategy = new OAuth2Strategy({
           totalDistance: 0,
           totalPace: 0,
           activityCount: 0,
+          totalMovingTime: 0,
           accessToken,
           refreshToken,
           expiresAt: params.expires_at 
@@ -45,6 +47,14 @@ const stravaStrategy = new OAuth2Strategy({
         user.refreshToken = refreshToken;
         user.expiresAt = params.expires_at;
         await user.save();
+      }
+
+      // Trigger immediate sync on login so the user sees fresh data
+      try {
+        await syncUserActivities(user._id.toString());
+      } catch (syncErr) {
+        console.error(`Initial sync failed for user ${user.firstName}:`, syncErr);
+        // We don't fail the login if sync fails, user can still access dashboard
       }
 
       return done(null, user);
