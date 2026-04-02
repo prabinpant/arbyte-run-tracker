@@ -68,7 +68,7 @@ const stravaStrategy = new OAuth2Strategy({
 passport.use('strava', stravaStrategy);
 
 passport.serializeUser((user: any, done) => {
-  done(null, user.id);
+  done(null, user._id);
 });
 
 passport.deserializeUser(async (id: string, done) => {
