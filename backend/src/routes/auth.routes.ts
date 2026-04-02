@@ -6,10 +6,10 @@ import { isAuthenticated } from '../middleware/auth.middleware';
 const router = Router();
 
 // OAuth Strava routes
-router.get('/strava', passport.authenticate('strava', { scope: ['read,activity:read_all'] }));
+router.get('/strava', passport.authenticate('strava', { scope: ['read,activity:read_all'], session: false }));
 
 router.get('/strava/callback', 
-  passport.authenticate('strava', { failureRedirect: `${process.env.VITE_APP_URL || 'http://localhost:5173'}/?error=strava_auth_failed` }),
+  passport.authenticate('strava', { failureRedirect: `${process.env.VITE_APP_URL || 'http://localhost:5173'}/?error=strava_auth_failed`, session: false }),
   (req: any, res: any) => {
     // Generate Token
     const token = jwt.sign(
