@@ -1,67 +1,84 @@
-import { Card } from './Card';
-import type { LeaderboardEntry } from '../../../shared';
+import React from 'react';
+import type { LeaderboardEntry } from '../../../shared/index';
 
 interface LeaderboardTableProps {
   entries: LeaderboardEntry[];
+  onAthleteClick?: (userId: string) => void;
 }
 
-export const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ entries }) => {
-  const formatPace = (paceInSeconds: number) => {
-    const minutes = Math.floor(paceInSeconds / 60);
-    const seconds = (paceInSeconds % 60).toString().padStart(2, '0');
-    return `${minutes}:${seconds} /km`;
+const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ entries, onAthleteClick }) => {
+  const formatDistance = (meters: number) => (meters / 1000).toFixed(2);
+  
+  const formatPace = (secondsPerKm: number) => {
+    const mins = Math.floor(secondsPerKm / 60);
+    const secs = Math.round(secondsPerKm % 60);
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
 
-  const formatDuration = (durationInSeconds: number) => {
-    const hours = Math.floor(durationInSeconds / 3600);
-    const minutes = Math.floor((durationInSeconds % 3600) / 60);
-    const seconds = (durationInSeconds % 60).toString().padStart(2, '0');
+  const formatDuration = (seconds: number) => {
+    const hours = Math.floor(seconds / 3600);
+    const mins = Math.floor((seconds % 3600) / 60);
+    const secs = Math.round(seconds % 60);
     return hours > 0 
-      ? `${hours}:${minutes.toString().padStart(2, '0')}:${seconds}`
-      : `${minutes}:${seconds}`;
+      ? `${hours}h ${mins}m` 
+      : `${mins}m ${secs}s`;
   };
 
   return (
-    <div className="leaderboard-container">
-      <Card title="🏆 Top Challengers">
-        <div style={{ overflowX: 'auto' }}>
-          <table style={{ width: '100%', borderCollapse: 'separate', borderSpacing: '0 8px' }}>
-            <thead>
-              <tr style={{ textAlign: 'left', fontFamily: 'var(--font-heading)' }}>
-                <th style={{ padding: '12px' }}>Rank</th>
-                <th style={{ padding: '12px' }}>Athlete</th>
-                <th style={{ padding: '12px' }}>Distance</th>
-                <th style={{ padding: '12px' }}>Avg. Pace</th>
-                <th style={{ padding: '12px' }}>Activities</th>
-                <th style={{ padding: '12px' }}>Duration</th>
+    <div className="glass-card" style={{ padding: 0, overflow: 'hidden' }}>
+      <div style={{ overflowX: 'auto' }}>
+        <table>
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Athlete</th>
+              <th>Distance</th>
+              <th>Avg. Pace</th>
+              <th>Activities</th>
+              <th>Duration</th>
+            </tr>
+          </thead>
+          <tbody>
+            {entries.map((entry, index) => (
+              <tr 
+                key={entry.userId} 
+                className="interactive-row"
+                onClick={() => onAthleteClick?.(entry.userId)}
+              >
+                <td style={{ fontWeight: 800, color: 'black', fontFamily: 'Bangers', fontSize: '1.25rem' }}>
+                  #{index + 1}
+                </td>
+                <td>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                    <div style={{ 
+                      fontSize: '1.5rem', 
+                      background: index < 3 ? 'hsl(var(--accent))' : '#eee', 
+                      width: '40px', 
+                      height: '40px', 
+                      display: 'flex', 
+                      alignItems: 'center', 
+                      justifyContent: 'center', 
+                      borderRadius: '50%',
+                      border: '2px solid black'
+                    }}>
+                      {entry.profileEmoji}
+                    </div>
+                    <span style={{ fontWeight: 800, fontSize: '1.1rem' }}>{entry.firstName} {entry.lastName}</span>
+                  </div>
+                </td>
+                <td style={{ fontWeight: 800, color: 'hsl(var(--primary))', fontSize: '1.25rem', fontFamily: 'Bangers' }}>
+                  {formatDistance(entry.totalDistance)} KM
+                </td>
+                <td style={{ fontWeight: 600 }}>{formatPace(entry.avgPace)} /KM</td>
+                <td style={{ fontWeight: 600 }}>{entry.totalActivities}</td>
+                <td style={{ fontWeight: 600 }}>{formatDuration(entry.totalMovingTime)}</td>
               </tr>
-            </thead>
-            <tbody>
-              {entries.map((user) => (
-                <tr key={user.id} className="cartoon-border" style={{ backgroundColor: '#fff', marginBottom: '8px' }}>
-                  <td style={{ padding: '12px', fontWeight: 'bold', fontSize: '1.2rem' }}>#{user.rank}</td>
-                  <td style={{ padding: '12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <span style={{ fontSize: '1.5rem' }}>{user.profileEmoji || '🏃'}</span>
-                    <div style={{ fontWeight: 'bold' }}>{user.firstName} {user.lastName}</div>
-                  </td>
-                  <td style={{ padding: '12px', fontWeight: 'bold' }}>
-                    {(user.totalDistance / 1000).toFixed(2)} km
-                  </td>
-                  <td style={{ padding: '12px' }}>
-                    {formatPace(user.totalPace)}
-                  </td>
-                  <td style={{ padding: '12px' }}>
-                    {user.activityCount}
-                  </td>
-                  <td style={{ padding: '12px' }}>
-                    {formatDuration(user.totalMovingTime)}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </Card>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };
+
+export default LeaderboardTable;

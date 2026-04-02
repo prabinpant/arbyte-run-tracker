@@ -1,19 +1,28 @@
-:root {
-  --primary: #FF007F; /* Hot Pink */
-  --secondary: #00F5FF; /* Cyan */
-  --accent: #50AF18; /* Lime Green */
-  --background: #FFE600; /* Yellow */
-  --surface: #FFFFFF;
-  --text: #000000;
-  --border-width: 4px;
-  --border-radius: 12px;
-  --font-main: 'Outfit', sans-serif;
-  --font-heading: 'Bungee', cursive;
-  --font-fun: 'Fredoka One', cursive;
+@import url('https://fonts.googleapis.com/css2?family=Bangers&family=Outfit:wght@400;600;800&display=swap');
 
-  /* Shadow for that cartoonish look */
-  --shadow-color: rgba(0, 0, 0, 1);
-  --shadow-offset: 6px;
+:root {
+  --background: 45 100% 50%; /* Nickelodeon Orange/Yellow */
+  --foreground: 0 0% 0%; /* Black */
+  --card: 0 0% 100%; /* White */
+  --card-foreground: 0 0% 0%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 0 0% 0%;
+  --primary: 354 100% 63%; /* Radical Red */
+  --primary-foreground: 210 40% 98%;
+  --secondary: 210 100% 52%; /* Blueberry */
+  --secondary-foreground: 210 40% 98%;
+  --muted: 210 40% 96.1%;
+  --muted-foreground: 215.4 16.3% 46.9%;
+  --accent: 145 63% 49%; /* UFO Green */
+  --accent-foreground: 210 40% 98%;
+  --destructive: 0 84.2% 60.2%;
+  --destructive-foreground: 210 40% 98%;
+  --border: 0 0% 0%; /* Solid Black */
+  --input: 214.3 31.8% 91.4%;
+  --ring: 222.2 84% 4.9%;
+  --radius: 0px; /* Sharp corners or very rounded but I'll stick to mostly sharp/retro */
+  --shadow: 4px 4px 0px 0px #000;
+  --shadow-hover: 6px 6px 0px 0px #000;
 }
 
 * {
@@ -23,140 +32,188 @@
 }
 
 body {
-  font-family: var(--font-main);
-  background-color: var(--background);
-  color: var(--text);
+  font-family: 'Outfit', sans-serif;
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
+  min-height: 100vh;
   line-height: 1.5;
-  overflow-x: hidden;
+  background-image: radial-gradient(rgba(0,0,0,0.1) 2px, transparent 0);
+  background-size: 20px 20px; /* Halftone/Comic pattern */
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-heading);
-  letter-spacing: 1px;
+h1, h2, h3, h4 {
+  font-family: 'Bangers', cursive;
+  font-weight: normal;
+  letter-spacing: 0.05em;
+  color: #000;
+  text-transform: uppercase;
 }
 
-/* 90s Cartoonish Utility Classes */
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem 1rem;
+}
 
-.cartoon-border {
-  border: var(--border-width) solid var(--text);
-  border-radius: var(--border-radius);
-  box-shadow: var(--shadow-offset) var(--shadow-offset) 0px var(--shadow-color);
+.glass-card {
+  background: white;
+  border: 4px solid #000;
+  border-radius: 4px;
+  padding: 1.5rem;
+  box-shadow: var(--shadow);
   transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
 
-.cartoon-border:hover {
+.glass-card:hover {
   transform: translate(-2px, -2px);
-  box-shadow: calc(var(--shadow-offset) + 2px) calc(var(--shadow-offset) + 2px) 0px var(--shadow-color);
+  box-shadow: var(--shadow-hover);
 }
 
-.cartoon-border:active {
-  transform: translate(2px, 2px);
-  box-shadow: calc(var(--shadow-offset) - 2px) calc(var(--shadow-offset) - 2px) 0px var(--shadow-color);
+.neon-text {
+  color: #000;
+  -webkit-text-stroke: 1px white;
+  text-shadow: 2px 2px 0px hsl(var(--primary));
 }
 
-.btn-retro {
-  display: inline-block;
-  padding: 12px 24px;
-  font-family: var(--font-fun);
-  font-size: 1.2rem;
-  background-color: var(--secondary);
-  border: var(--border-width) solid var(--text);
-  border-radius: var(--border-radius);
+.neon-button {
+  background-color: hsl(var(--primary));
+  color: white;
+  border: 4px solid #000;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-family: 'Bangers', cursive;
+  font-size: 1.25rem;
+  font-weight: normal;
   cursor: pointer;
-  box-shadow: var(--shadow-offset) var(--shadow-offset) 0px var(--shadow-color);
-  text-decoration: none;
-  color: black;
   transition: all 0.1s ease;
-  user-select: none;
+  box-shadow: var(--shadow);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+  text-transform: uppercase;
 }
 
-.btn-retro:hover {
-  background-color: var(--primary);
-  transform: translate(-3px, -3px);
-  box-shadow: 9px 9px 0px var(--shadow-color);
+.neon-button:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: var(--shadow-hover);
+  background-color: hsl(var(--primary));
 }
 
-.btn-retro:active {
-  transform: translate(3px, 3px);
-  box-shadow: 2px 2px 0px var(--shadow-color);
+.neon-button:active {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px 0px #000;
 }
 
-/* Texture Overlay */
-body::after {
-  content: "";
+.neon-button.secondary {
+  background-color: hsl(var(--secondary));
+  border: 4px solid #000;
+  color: white;
+  box-shadow: var(--shadow);
+}
+
+.neon-button.secondary:hover {
+  background-color: hsl(var(--secondary));
+  box-shadow: var(--shadow-hover);
+}
+
+table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+th {
+  text-align: left;
+  padding: 1rem;
+  font-family: 'Bangers', cursive;
+  font-size: 1.1rem;
+  font-weight: normal;
+  color: #000;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border-bottom: 4px solid #000;
+}
+
+td {
+  padding: 1rem;
+  border-bottom: 2px solid #000;
+  font-size: 1rem;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
+tr:last-child td {
+  border-bottom: none;
+}
+
+tr.interactive-row {
+  cursor: pointer;
+  transition: background-color 0.1s ease;
+}
+
+tr.interactive-row:hover {
+  background-color: hsla(var(--background), 0.3);
+}
+
+.progress-bar-container {
+  width: 100%;
+  height: 24px;
+  background-color: #eee;
+  border: 4px solid #000;
+  border-radius: 0px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: hsl(var(--accent));
+  border-right: 4px solid #000;
+  transition: width 1s ease-out;
+}
+
+/* Modal styles */
+.modal-overlay {
   position: fixed;
   top: 0;
   left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+}
+
+.modal-content {
   width: 100%;
-  height: 100%;
-  pointer-events: none;
-  background-image: url("https://www.transparenttextures.com/patterns/p6.png");
-  opacity: 0.15;
-  z-index: 9999;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
 }
 
-.card {
-  background-color: var(--surface);
-  padding: 24px;
-  margin: 16px;
-}
-
-.vibrant-pink { background-color: var(--primary); color: white; }
-.vibrant-cyan { background-color: var(--secondary); }
-.vibrant-green { background-color: var(--accent); color: white; }
-
-/* Animations */
-@keyframes shake {
-  0% { transform: rotate(0deg); }
-  25% { transform: rotate(-1deg); }
-  50% { transform: rotate(0deg); }
-  75% { transform: rotate(1deg); }
-  100% { transform: rotate(0deg); }
-}
-
-.animate-shake {
-  animation: shake 0.5s infinite linear;
-}
-
-@keyframes float {
-  0% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
-  100% { transform: translateY(0px); }
-}
-
-.animate-float {
-  animation: float 3s infinite ease-in-out;
-}
-
-/* Responsive Tweaks */
-@media (max-width: 768px) {
-  :root {
-    --shadow-offset: 4px;
-    --border-width: 3px;
-  }
-  
-  h1 {
-    font-size: 2.5rem !important;
-  }
-  
-  .card {
-    padding: 16px;
-    margin: 8px 0;
-  }
-}
-
-/* Custom Scrollbar */
+/* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 12px;
+  width: 8px;
 }
-
 ::-webkit-scrollbar-track {
-  background: var(--background);
-  border-left: 2px solid black;
+  background: hsl(var(--background));
+}
+::-webkit-scrollbar-thumb {
+  background: hsl(var(--border));
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: hsl(var(--muted-foreground));
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--primary);
-  border: 3px solid black;
-  border-radius: 10px;
+@media (max-width: 640px) {
+  .container {
+    padding: 1rem;
+  }
 }
