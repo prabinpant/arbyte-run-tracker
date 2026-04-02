@@ -57,7 +57,7 @@ function App() {
 
   const handleUpdateBio = async () => {
     try {
-      const res = await fetch(`${API_URL}/api/auth/me`, {
+      const res = await fetch(`${API_URL}/api/users/me`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ bio: bioText }),
@@ -108,7 +108,7 @@ function App() {
         </p>
       </header>
 
-      {isLoggedIn && (
+      {isLoggedIn && ( 
         <section style={{ marginBottom: '4rem' }}>
           <div className="glass-card" style={{ padding: '2rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1.5rem', marginBottom: '2rem' }}>

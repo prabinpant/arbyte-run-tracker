@@ -49,7 +49,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ athlete, onClose }) => {
 
   return (
     <div className="modal-overlay" onClick={onClose}>
-      <div className="modal-content glass-card" onClick={e => e.stopPropagation()} style={{ position: 'relative' }}>
+      <div className="modal-container" onClick={e => e.stopPropagation()}>
         <button 
           onClick={onClose}
           style={{
@@ -67,76 +67,79 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ athlete, onClose }) => {
             alignItems: 'center',
             justifyContent: 'center',
             fontFamily: 'Bangers',
-            transform: 'rotate(5deg)'
+            transform: 'rotate(5deg)',
+            zIndex: 1010
           }}
         >
           X
         </button>
 
-        <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-          <div style={{ 
-            fontSize: '5rem', 
-            marginBottom: '1rem', 
-            background: '#eee', 
-            width: '120px', 
-            height: '120px', 
-            margin: '0 auto 1rem', 
-            display: 'flex', 
-            alignItems: 'center', 
-            justifyContent: 'center', 
-            borderRadius: '50%',
-            border: '4px solid black',
-            boxShadow: 'var(--shadow)'
-          }}>{athlete.profileEmoji}</div>
-          <h2 style={{ fontSize: '3rem', marginBottom: '0.5rem', color: 'black' }}>{athlete.firstName} {athlete.lastName}</h2>
-          {athlete.bio ? (
-            <p style={{ color: 'black', fontWeight: 600, maxWidth: '400px', margin: '0 auto' }}>
-              "{athlete.bio}"
-            </p>
+        <div className="modal-content glass-card no-transform">
+          <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+            <div style={{ 
+              fontSize: '5rem', 
+              marginBottom: '1rem', 
+              background: '#eee', 
+              width: '120px', 
+              height: '120px', 
+              margin: '0 auto 1rem', 
+              display: 'flex', 
+              alignItems: 'center', 
+              justifyContent: 'center', 
+              borderRadius: '50%',
+              border: '4px solid black',
+              boxShadow: 'var(--shadow)'
+            }}>{athlete.profileEmoji}</div>
+            <h2 style={{ fontSize: '3rem', marginBottom: '0.5rem', color: 'black' }}>{athlete.firstName} {athlete.lastName}</h2>
+            {athlete.bio ? (
+              <p style={{ color: 'black', fontWeight: 600, maxWidth: '400px', margin: '0 auto' }}>
+                "{athlete.bio}"
+              </p>
+            ) : (
+              <p style={{ color: 'black', opacity: 0.5, fontWeight: 600 }}>Training in stealth mode...</p>
+            )}
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
+            <div className="glass-card" style={{ textAlign: 'center', padding: '1rem', background: 'hsl(var(--secondary))', color: 'white' }}>
+              <div style={{ fontSize: '0.875rem', fontWeight: 800 }}>TOTAL DISTANCE</div>
+              <div style={{ fontSize: '2rem', fontWeight: 'normal', fontFamily: 'Bangers' }}>
+                {formatDistance(athlete.totalDistance)} KM
+              </div>
+            </div>
+            <div className="glass-card" style={{ textAlign: 'center', padding: '1rem', background: 'hsl(var(--accent))', color: 'black' }}>
+              <div style={{ fontSize: '0.875rem', fontWeight: 800 }}>AVG PACE</div>
+              <div style={{ fontSize: '2rem', fontWeight: 'normal', fontFamily: 'Bangers' }}>
+                {formatPace(athlete.avgPace)} /KM
+              </div>
+            </div>
+          </div>
+
+          <h3 style={{ marginBottom: '1rem', fontSize: '1.25rem' }}>April Activity Feed</h3>
+          
+          {loading ? (
+            <p style={{ textAlign: 'center', padding: '2rem', fontWeight: 800 }}>Loading runs...</p>
+          ) : activities.length > 0 ? (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {activities.map(activity => (
+                <div key={activity._id} className="glass-card" style={{ padding: '0.75rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white' }}>
+                  <div>
+                    <div style={{ fontWeight: 800, fontSize: '1.1rem' }}>{activity.name}</div>
+                    <div style={{ fontSize: '0.875rem', fontWeight: 600 }}>{formatDate(activity.startDate)}</div>
+                  </div>
+                  <div style={{ textAlign: 'right' }}>
+                    <div style={{ fontWeight: 'normal', fontFamily: 'Bangers', fontSize: '1.5rem', color: 'hsl(var(--primary))' }}>{formatDistance(activity.distance)} KM</div>
+                    <div style={{ fontSize: '0.875rem', fontWeight: 600 }}>{formatPace(activity.movingTime / (activity.distance / 1000))} /KM</div>
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : (
-            <p style={{ color: 'black', opacity: 0.5, fontWeight: 600 }}>Training in stealth mode...</p>
+            <p style={{ textAlign: 'center', padding: '2rem', color: 'hsl(var(--muted-foreground))' }}>
+              No activities recorded in April yet.
+            </p>
           )}
         </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '2rem' }}>
-          <div className="glass-card" style={{ textAlign: 'center', padding: '1rem', background: 'hsl(var(--secondary))', color: 'white' }}>
-            <div style={{ fontSize: '0.875rem', fontWeight: 800 }}>TOTAL DISTANCE</div>
-            <div style={{ fontSize: '2rem', fontWeight: 'normal', fontFamily: 'Bangers' }}>
-              {formatDistance(athlete.totalDistance)} KM
-            </div>
-          </div>
-          <div className="glass-card" style={{ textAlign: 'center', padding: '1rem', background: 'hsl(var(--accent))', color: 'black' }}>
-            <div style={{ fontSize: '0.875rem', fontWeight: 800 }}>AVG PACE</div>
-            <div style={{ fontSize: '2rem', fontWeight: 'normal', fontFamily: 'Bangers' }}>
-              {formatPace(athlete.avgPace)} /KM
-            </div>
-          </div>
-        </div>
-
-        <h3 style={{ marginBottom: '1rem', fontSize: '1.25rem' }}>April Activity Feed</h3>
-        
-        {loading ? (
-          <p style={{ textAlign: 'center', padding: '2rem', fontWeight: 800 }}>Loading runs...</p>
-        ) : activities.length > 0 ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {activities.map(activity => (
-              <div key={activity._id} className="glass-card" style={{ padding: '0.75rem 1rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'white' }}>
-                <div>
-                  <div style={{ fontWeight: 800, fontSize: '1.1rem' }}>{activity.name}</div>
-                  <div style={{ fontSize: '0.875rem', fontWeight: 600 }}>{formatDate(activity.startDate)}</div>
-                </div>
-                <div style={{ textAlign: 'right' }}>
-                  <div style={{ fontWeight: 'normal', fontFamily: 'Bangers', fontSize: '1.5rem', color: 'hsl(var(--primary))' }}>{formatDistance(activity.distance)} KM</div>
-                  <div style={{ fontSize: '0.875rem', fontWeight: 600 }}>{formatPace(activity.movingTime / (activity.distance / 1000))} /KM</div>
-                </div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <p style={{ textAlign: 'center', padding: '2rem', color: 'hsl(var(--muted-foreground))' }}>
-            No activities recorded in April yet.
-          </p>
-        )}
       </div>
     </div>
   );

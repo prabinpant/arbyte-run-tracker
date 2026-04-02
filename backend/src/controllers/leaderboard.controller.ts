@@ -61,5 +61,5 @@ export const getLeaderboard = asyncHandler(async (req: Request, res: Response) =
     };
   });
 
-  res.json(leaderboard);
+  res.json({ leaderboard });
 });

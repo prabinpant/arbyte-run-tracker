@@ -66,7 +66,7 @@ const LeaderboardTable: React.FC<LeaderboardTableProps> = ({ entries, onAthleteC
                     <span style={{ fontWeight: 800, fontSize: '1.1rem' }}>{entry.firstName} {entry.lastName}</span>
                   </div>
                 </td>
-                <td style={{ fontWeight: 800, color: 'hsl(var(--primary))', fontSize: '1.25rem', fontFamily: 'Bangers' }}>
+                <td style={{ fontWeight: 800, color: 'hsl(var(--primary))', fontSize: '1.25rem', fontFamily: 'Bangers', letterSpacing: '0.07em' }}>
                   {formatDistance(entry.totalDistance)} KM
                 </td>
                 <td style={{ fontWeight: 600 }}>{formatPace(entry.avgPace)} /KM</td>
