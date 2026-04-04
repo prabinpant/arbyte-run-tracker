@@ -28,38 +28,31 @@ export const getLeaderboard = asyncHandler(async (req: Request, res: Response) =
     { $sort: { totalDistance: -1 } }
   ]);
 
-  // Populate user info
-  const usersPromises = stats.map(async (stat) => {
-    const user = await User.findById(stat._id);
+  // Populate user info efficiently
+  const userIds = stats.map(s => s._id);
+  const usersFound = await User.find({ _id: { $in: userIds } }).lean();
+  
+  // Create a map for quick access
+  const userMap = new Map(usersFound.map(u => [u._id.toString(), u]));
+
+  const leaderboardData = stats.map((stat) => {
+    const user = userMap.get(stat._id.toString());
     const totalPace = stat.totalDistance > 0 
       ? Math.round(stat.totalMovingTime / (stat.totalDistance / 1000)) 
       : 0;
     
     return {
-      ...user?.toObject(),
-      _id: stat._id,
+      userId: stat._id.toString(),
+      firstName: user?.firstName || 'Athlete',
+      lastName: user?.lastName || '',
+      profileEmoji: user?.profileEmoji || '🏃',
+      bio: user?.bio || '',
       totalDistance: stat.totalDistance,
-      activityCount: stat.activityCount,
-      totalMovingTime: stat.totalMovingTime,
-      totalPace
+      totalActivities: stat.activityCount,
+      avgPace: totalPace,
+      totalMovingTime: stat.totalMovingTime
     };
   });
 
-  const users = await Promise.all(usersPromises);
-
-  const leaderboard: LeaderboardEntry[] = users.map((user) => {
-    return {
-      userId: user._id.toString(),
-      firstName: user.firstName || 'Athlete',
-      lastName: user.lastName || '',
-      profileEmoji: user.profileEmoji || '🏃',
-      bio: user.bio,
-      totalDistance: user.totalDistance || 0,
-      totalActivities: user.activityCount || 0,
-      avgPace: user.totalPace || 0,
-      totalMovingTime: user.totalMovingTime || 0
-    };
-  });
-
-  res.json({ leaderboard });
+  res.json({ leaderboard: leaderboardData });
 });

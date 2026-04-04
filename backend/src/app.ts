@@ -43,7 +43,11 @@ app.use(passport.initialize());
 
 // Routes
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok' });
+  res.status(200).json({ 
+    status: 'ok',
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime()
+  });
 });
 
 app.use('/api/auth', authRoutes);
